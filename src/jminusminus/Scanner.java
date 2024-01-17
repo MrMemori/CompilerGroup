@@ -97,8 +97,9 @@ class Scanner {
                     while (ch != '\n' && ch != EOFCH) {
                         nextCh();
                     }
+                // Checks for Multiline comments to ignore (Cody Dukes)
                 } else if (ch == '*') {
-                	// Multi-line comment started. (Cody)
+                	// Multi-line comment started.
                 	isMultiline = true;
                 	nextCh();
                 	while (isMultiline) {
