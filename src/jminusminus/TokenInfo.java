@@ -19,15 +19,15 @@ enum TokenKind {
     INSTANCEOF("instanceof"), INT("int"), INTERFACE("interface"), LONG("long"), NATIVE("native"), 
     NEW("new"), PACKAGE("package"), PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"), 
     RETURN("return"), SHORT("short"), STATIC("static"), STRICTFP("strictfp"), SUPER("super"), 
-    THIS("this"), VOID("void"), WHILE("while"),
+    THIS("this"), UNDERSCORE("_"), VOID("void"), WHILE("while"),
 
     // Operators.
-    ASSIGN("="), GT(">"), LT("<"), LNOT("!"), BIT_COMP("~"), CONDITIONAL_1("?"), CONDITIONAL_2(":"), LAMBDA("->"), 
+    ASSIGN("="), GT(">"), LT("<"), LNOT("!"), COMPLEMENT("~"), QUESTION("?"), COLON(":"), LAMBDA("->"), 
     EQUAL("=="), GE(">="), LE("<="), NOT_EQUAL("!="), LAND("&&"),  LOR("||"), INC("++"), DEC("--"), 
     PLUS("+"), PLUS_ASSIGN("+="), MINUS("-"), MINUS_ASSIGN("-="), STAR("*"), STAR_ASSIGN("*="), DIV("/"), DIV_ASSIGN("/="), 
     AND("&"), AND_ASSIGN("&="), OR("|"), OR_ASSIGN("|="), XOR("^"), XOR_ASSIGN("^="), MOD("%"), MOD_ASSIGN("%="),
     LS("<<"), LS_ASSIGN("<<="), RS(">>"), RS_ASSIGN(">>="), RS_UNSIGNED(">>>"), RS_UNSIGNED_ASSIGN(">>>="), 
-    
+
     // Separators.
     COMMA(","), DOT("."), LBRACK("["), LCURLY("{"), LPAREN("("), RBRACK("]"), RCURLY("}"),
     RPAREN(")"), SEMI(";"), VAR_ARGS("..."), METHOD_REFERENCE("::"), AT("@"),

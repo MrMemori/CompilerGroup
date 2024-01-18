@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.util.Collection;
 import java.util.Hashtable;
 
 import static jminusminus.TokenKind.*;
@@ -14,6 +15,7 @@ import static jminusminus.TokenKind.*;
  * A lexical analyzer for j--, that has no backtracking mechanism.
  */
 class Scanner {
+    
     // End of file character.
     public final static char EOFCH = CharReader.EOFCH;
 
@@ -45,31 +47,54 @@ class Scanner {
         this.input = new CharReader(fileName);
         this.fileName = fileName;
         isInError = false;
-
+        
         // Keywords in j--
         reserved = new Hashtable<String, TokenKind>();
         reserved.put(ABSTRACT.image(), ABSTRACT);
+        reserved.put(ASSERT.image(), ASSERT);
         reserved.put(BOOLEAN.image(), BOOLEAN);
+        reserved.put(BREAK.image(), BREAK);
+        reserved.put(BYTE.image(), BYTE);
+        reserved.put(CASE.image(), CASE);
+        reserved.put(CATCH.image(), CATCH);
         reserved.put(CHAR.image(), CHAR);
         reserved.put(CLASS.image(), CLASS);
+        reserved.put(CONST.image(), CONST);
+        reserved.put(CONTINUE.image(), CONTINUE);
+        reserved.put(DEFAULT, DEFAULT.image());
+        reserved.put(DO.image(), DO);
+        reserved.put(DOUBLE.image(), DOUBLE);
         reserved.put(ELSE.image(), ELSE);
+        reserved.put(ENUM.image(), ENUM);
         reserved.put(EXTENDS.image(), EXTENDS);
-        reserved.put(FALSE.image(), FALSE);
+        reserved.put(FINAL.image(),FINAL);
+        reserved.put(FINALLY.image(),FINALLY);
+        reserved.put(FLOAT.image(), FLOAT);
+        reserved.put(FOR.image(), FOR);
+        //reserved.put(FALSE.image(), FALSE); Handling false separately since it's not case sensitive.
         reserved.put(IF.image(), IF);
+        reserved.put(GOTO.image(), GOTO);
+        reserved.put(IMPLEMENTS.image(), IMPLEMENTS);
         reserved.put(IMPORT.image(), IMPORT);
         reserved.put(INSTANCEOF.image(), INSTANCEOF);
         reserved.put(INT.image(), INT);
+        reserved.put(INTERFACE.image(), INTERFACE);
+        reserved.put(LONG.image(), LONG);
+        reserved.put(NATIVE.image(), NATIVE);
         reserved.put(NEW.image(), NEW);
-        reserved.put(NULL.image(), NULL);
+        // reserved.put(NULL.image(), NULL); Handling null separately since it's not case sensitive
         reserved.put(PACKAGE.image(), PACKAGE);
         reserved.put(PRIVATE.image(), PRIVATE);
         reserved.put(PROTECTED.image(), PROTECTED);
         reserved.put(PUBLIC.image(), PUBLIC);
         reserved.put(RETURN.image(), RETURN);
+        reserved.put(SHORT.image(), SHORT);
         reserved.put(STATIC.image(), STATIC);
+        reserved.put(STRICTFP.image(), STRICTFP);
         reserved.put(SUPER.image(), SUPER);
         reserved.put(THIS.image(), THIS);
-        reserved.put(TRUE.image(), TRUE);
+        // reserved.put(TRUE.image(), TRUE); Handling true separately since it's not case sensitive.
+        reserved.put(UNDERSCORE.image(), UNDERSCORE);
         reserved.put(VOID.image(), VOID);
         reserved.put(WHILE.image(), WHILE);
 
@@ -123,9 +148,70 @@ class Scanner {
             case ',':
                 nextCh();
                 return new TokenInfo(COMMA, line);
-            case '.':
+            case '.':// Checks for float/double literals starting with . as well as . and ... separators (Tanner Denson)
                 nextCh();
-                return new TokenInfo(DOT, line);
+                if(!isDigit(ch)) {
+                    if(ch == '.') {
+                        nextCh();
+                        if(ch == '.') {
+                            nextCh();
+                            return new TokenInfo(VAR_ARGS, line);
+                        }
+                        else {
+                            reportScannerError("Unidentified input token: '..'");
+                            getNextToken();
+                        }
+                    } else {
+                        return new TokenInfo(DOT, line);
+                    }
+                } else {
+                    buffer = new StringBuffer();
+                    buffer.append('.');
+                    buffer.append(ch);
+                    nextCh();
+                    boolean scientificNotation = false;
+                    while (isDigit(ch) || ch == 'e' || ch == 'E' || ch == '_') {
+                        if(ch == 'e' || ch == 'E') {
+                            char previousChar = buffer.charAt(buffer.length() - 1);
+                            if(previousChar == '_') {
+                                reportScannerError("Underscores must be within digits.");
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            }
+                            else if(scientificNotation) {
+                                reportScannerError("Cannot have two 'e'/'E' in literal.");
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            } else {
+                                buffer.append(ch);
+                                nextCh();
+                                scientificNotation = true;
+                                if(ch == '+' || ch == '-') {
+                                    buffer.append(ch);
+                                    nextCh();
+                                }
+                            }
+                        }
+                        else if(ch == '_') {
+                            char previousChar = buffer.charAt(buffer.length() - 1);
+                            if(previousChar == 'e' || previousChar == 'E') {
+                                reportScannerError("Underscores must be within digits.");
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            }
+                        }
+                        buffer.append(ch);
+                        nextCh();
+                }
+                if(ch == 'f' || ch == 'F') {
+                    buffer.append(ch);
+                    nextCh();
+                    return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
+                } else {
+                    if(ch == 'd' || ch == 'D') {
+                        buffer.append(ch);
+                        nextCh();
+                    }
+                    return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                }
+                }
             case '[':
                 nextCh();
                 return new TokenInfo(LBRACK, line);
@@ -149,7 +235,18 @@ class Scanner {
                 return new TokenInfo(SEMI, line);
             case '*':
                 nextCh();
+                if (ch == '=') {
+                    nextCH();
+                    return new TokenInfo(STAR_ASSIGN, line);
+                }
                 return new TokenInfo(STAR, line);
+            case '/':
+                nextCh();
+                if (ch == '=') {
+                    nextCH();
+                    return new TokenInfo(DIV_ASSIGN, line);
+                }
+                return new TokenInfo(DIV, line);
             case '+':
                 nextCh();
                 if (ch == '=') {
@@ -163,11 +260,25 @@ class Scanner {
                 }
             case '-':
                 nextCh();
-                if (ch == '-') {
+                if (ch == '=') {
+                    nextCh();
+                    return new TokenInfo(MINUS_ASSIGN, line);
+                } else if (ch == '-') {
                     nextCh();
                     return new TokenInfo(DEC, line);
+                } else if (ch == '>') {
+                    nextCh();
+                    return new TokenInfo(LAMBDA, line);
                 } else {
                     return new TokenInfo(MINUS, line);
+                }
+            case '%':
+                nextCh();
+                if (ch == '=') {
+                    nextCh();
+                    return new TokenInfo(MOD_ASSIGN, line);
+                } else {
+                    return new TokenInfo(MOD, line);
                 }
             case '=':
                 nextCh();
@@ -179,28 +290,110 @@ class Scanner {
                 }
             case '>':
                 nextCh();
+                if (ch == '=') {
+                    nextCh();
+                    return new TokenInfo(GE, line);
+                }
+                else if (ch == '>') {
+                    nextCh();
+                    if (ch == '=') {
+                        nextCh();
+                        return new TokenInfo(RS_ASSIGN, line);
+                    }
+                    else if (ch == '>') {
+                        nextCh();
+                        if(ch == '=') {
+                            nextCh();
+                            return new TokenInfo(RS_UNSIGNED_ASSIGN, line);
+                        }
+                        else {
+                            return new TokenInfo(RS_UNSIGNED, line);
+                        }
+                    }
+                    return new TokenInfo(RS, line);
+                }
                 return new TokenInfo(GT, line);
             case '<':
                 nextCh();
                 if (ch == '=') {
                     nextCh();
                     return new TokenInfo(LE, line);
-                } else {
-                    reportScannerError("Operator < is not supported in j--");
-                    return getNextToken();
+                } 
+                else if(ch == '<') {
+                    nextCh();
+                    if(ch == '=') {
+                        nextCh();
+                        return new TokenInfo(LS_ASSIGN, line);
+                    }
+                    else {
+                        return new TokenInfo(LS, line);
+                    }
+                }
+                else {
+                    /* reportScannerError("Operator < is not supported in j--");
+                    return getNextToken();*/
+                    return new TokenInfo(LT, line);
                 }
             case '!':
                 nextCh();
-                return new TokenInfo(LNOT, line);
+                if(ch == '=') {
+                    nextCh();
+                    return new TokenInfo(NOT_EQUAL, line);
+                } else {
+                    return new TokenInfo(LNOT, line);
+                }
             case '&':
                 nextCh();
                 if (ch == '&') {
                     nextCh();
                     return new TokenInfo(LAND, line);
+                } 
+                else if (ch == '=') {
+                    nextCh();
+                    return new TokenInfo(AND_ASSIGN, line);
                 } else {
-                    reportScannerError("Operator & is not supported in j--");
-                    return getNextToken();
+                    /*reportScannerError("Operator & is not supported in j--");
+                    return getNextToken();*/
+                    return new TokenInfo(AND, line);
                 }
+            case '|':
+                nextCh();
+                if (ch == '|') {
+                    nextCh();
+                    return new TokenInfo(LOR, line);
+                } 
+                else if (ch == '=') {
+                    nextCh();
+                    return new TokenInfo(OR_ASSIGN, line);
+                } else {
+                    return new TokenInfo(OR, line);
+                }
+            case '^':
+                nextCh();
+                if (ch == '=') {
+                    nextCh();
+                    return new TokenInfo(XOR_ASSIGN, line);
+                } else {
+                    return new TokenInfo(XOR, line);
+                }
+            case '@':
+                nextCh();
+                return new TokenInfo(AT, line);
+
+            case ':':
+                nextCh();
+                if(ch == ':') {
+                    nextCh();
+                    return new TokenInfo(METHOD_REFERENCE, line);
+                } else {
+                    return new TokenInfo(COLON, line);
+                }
+            case '~':
+                nextCh();
+                return new TokenInfo(COMPLEMENT, line);
+            case '?':
+                nextCh();
+                return new TokenInfo(QUESTION, line);
             case '\'':
                 buffer = new StringBuffer();
                 buffer.append('\'');
@@ -249,7 +442,6 @@ class Scanner {
                 return new TokenInfo(STRING_LITERAL, buffer.toString(), line);
             case EOFCH:
                 return new TokenInfo(EOF, line);
-            case '0':
             case '1':
             case '2':
             case '3':
@@ -258,13 +450,98 @@ class Scanner {
             case '6':
             case '7':
             case '8':
-            case '9':
+            case '9':// Added scanning for number literals not starting with 0 (Tanner Denson)
+                boolean floatingPoint = false;
+                boolean scientificNotation = false;
                 buffer = new StringBuffer();
-                while (isDigit(ch)) {
+                buffer.append(ch);
+                nextCh();
+                while (isDigit(ch) || ch == '_' || ch == '.' || ch == 'e' || ch == 'E') {
+                    if(ch == 'e' || ch == 'E') {
+                        char previousChar = buffer.charAt(buffer.length() - 1);
+                        if(previousChar == '_') {
+                            reportScannerError("Underscores must be within digits.");
+                            if(floatingPoint) {
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            } else {
+                                return new TokenInfo(INT_LITERAL, buffer.toString(), line);
+                            }
+                        }
+                        else if(scientificNotation) {
+                            reportScannerError("Cannot have two 'e'/'E' in literal.");
+                            return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                        } else {
+                            buffer.append(ch);
+                            nextCh();
+                            scientificNotation = true;
+                            if(ch == '+' || ch == '-') {
+                                buffer.append(ch);
+                                nextCh();
+                            }
+                        }
+                    }
+                    else if(ch == '.') {
+                        char previousChar = buffer.charAt(buffer.length() - 1);
+                        if(previousChar == '_' || previousChar == '.' || previousChar == 'e' || previousChar == 'E') {
+                            reportScannerError("Cannot have a '.' next to an '_' or '.' or after 'e'/'E'.");
+                            if(floatingPoint || scientificNotation) {
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            }
+                            return new TokenInfo(INT_LITERAL, buffer.toString(), line);
+                        }
+                        buffer.append(ch);
+                        nextCh();
+                        floatingPoint = true;
+                    }
+                    else if(ch == '_') {
+                        char previousChar = buffer.charAt(buffer.length() - 1);
+                        if(previousChar == '.' || previousChar == 'e' || previousChar == 'E') {
+                            reportScannerError("Cannot have an '_' next to an '.' or 'e'/'E'");
+                            return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                        }
+                        buffer.append(ch);
+                        nextCh();
+                    }
                     buffer.append(ch);
                     nextCh();
                 }
-                return new TokenInfo(INT_LITERAL, buffer.toString(), line);
+
+                if(buffer.charAt(buffer.length()-1) == '_') {
+                    reportScannerError("Cannot have an '_' at end of literal or before suffix");
+                }
+                String[] suffixes = {'l','f','d'};
+                for (String suffix : suffixes) {
+                    if (suffix.equalsIgnoreCase(ch)) {
+                        switch(suffix) {
+                            case "l":
+                                if(!floatingPoint) {
+                                    buffer.append(ch);
+                                    nextCh();
+                                    return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
+                                } else {
+                                    return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                                }
+                            case "f":
+                                return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
+                            case "d":
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                        }
+                    }
+                }
+
+                if(floatingPoint) {// There was an '.' in the literal and no suffix so defaults to double
+                    return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                } else {
+                    return new TokenInfo(INT_LITERAL, buffer.toString(), line);
+                }
+            case '0'://TODO: Numbers starting with 0 and extra credit bases
+            /* Notes: Hexadecimal scientific notation uses p/P instead of e/E
+             * literals cannot start or end with _ and _ cannot be next to anything but digits
+             * There is an optional sign +/- before the exponent in scientific notation
+             * Exponent part in scientific notation must be integer (no decimal point)
+             * For extra credit: Need binary (0b) octal (0) and hex (0x) these along with suffixes are not case sensitive
+             * Scientific notation literals will be doubles unless it has the float suffix
+             */
             default:
                 if (isIdentifierStart(ch)) {
                     buffer = new StringBuffer();
@@ -275,7 +552,19 @@ class Scanner {
                     String identifier = buffer.toString();
                     if (reserved.containsKey(identifier)) {
                         return new TokenInfo(reserved.get(identifier), line);
-                    } else {
+                    } else { // Moved false,true,null here instead of in the hashtable since they're not case sensitive to make it easier (Tanner Denson)
+                        if(identifier.toLowerCase().equals("false")) {
+                            return new TokenInfo(FALSE, line);
+                        }
+
+                        if(identifier.toLowerCase().equals("true")) {
+                            return new TokenInfo(TRUE, line);
+                        }
+
+                        if(identifier.toLowerCase().equals("null")) {
+                            return new TokenInfo(NULL, line);
+                        }
+
                         return new TokenInfo(IDENTIFIER, identifier, line);
                     }
                 } else {
@@ -293,6 +582,7 @@ class Scanner {
      */
     public boolean errorHasOccurred() {
         return isInError;
+        
     }
 
     /**
