@@ -11,26 +11,34 @@ enum TokenKind {
     EOF(""),
 
     // Reserved words.
-    ABSTRACT("abstract"), BOOLEAN("boolean"), CHAR("char"), CLASS("class"), ELSE("else"),
-    EXTENDS("extends"), IF("if"), IMPORT("import"), INSTANCEOF("instanceof"), INT("int"),
-    NEW("new"), PACKAGE("package"), PRIVATE("private"), PROTECTED("protected"),
-    PUBLIC("public"), RETURN("return"), STATIC("static"), SUPER("super"), THIS("this"),
-    VOID("void"), WHILE("while"),
+    ABSTRACT("abstract"), ASSERT("assert"), BOOLEAN("boolean"), BREAK("break"), BYTE("byte"), 
+    CASE("case"), CATCH("catch"), CHAR("char"), CLASS("class"), CONST("const"), 
+    CONTINUE("continue"), DEFAULT("deafult"), DO("do"), DOUBLE("double"), ELSE("else"),
+    ENUM("enum"), EXTENDS("extends"), FINAL("final"), FINALLY("finally"), FLOAT("float"), 
+    FOR("for"), IF("if"), GOTO("goto"), IMPLEMENTS("implements"), IMPORT("import"), 
+    INSTANCEOF("instanceof"), INT("int"), INTERFACE("interface"), LONG("long"), NATIVE("native"), 
+    NEW("new"), PACKAGE("package"), PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"), 
+    RETURN("return"), SHORT("short"), STATIC("static"), STRICTFP("strictfp"), SUPER("super"), 
+    THIS("this"), VOID("void"), WHILE("while"),
 
     // Operators.
-    ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND("&&"), LE("<="), LNOT("!"),
-    MINUS("-"), PLUS("+"), PLUS_ASSIGN("+="), STAR("*"),
-
+    ASSIGN("="), GT(">"), LT("<"), LNOT("!"), BIT_COMP("~"), CONDITIONAL_1("?"), CONDITIONAL_2(":"), LAMBDA("->"), 
+    EQUAL("=="), GE(">="), LE("<="), NOT_EQUAL("!="), LAND("&&"),  LOR("||"), INC("++"), DEC("--"), 
+    PLUS("+"), PLUS_ASSIGN("+="), MINUS("-"), MINUS_ASSIGN("-="), STAR("*"), STAR_ASSIGN("*="), DIV("/"), DIV_ASSIGN("/="), 
+    AND("&"), AND_ASSIGN("&="), OR("|"), OR_ASSIGN("|="), XOR("^"), XOR_ASSIGN("^="), MOD("%"), MOD_ASSIGN("%="),
+    LS("<<"), LS_ASSIGN("<<="), RS(">>"), RS_ASSIGN(">>="), RS_UNSIGNED(">>>"), RS_UNSIGNED_ASSIGN(">>>="), 
+    
     // Separators.
     COMMA(","), DOT("."), LBRACK("["), LCURLY("{"), LPAREN("("), RBRACK("]"), RCURLY("}"),
-    RPAREN(")"), SEMI(";"),
+    RPAREN(")"), SEMI(";"), VAR_ARGS("..."), METHOD_REFERENCE("::"), AT("@"),
 
     // Identifiers.
     IDENTIFIER("<IDENTIFIER>"),
 
     // Literals.
-    CHAR_LITERAL("<CHAR_LITERAL>"), FALSE("false"), INT_LITERAL("<INT_LITERAL>"), NULL("null"),
-    STRING_LITERAL("<STRING_LITERAL>"), TRUE("true");
+    CHAR_LITERAL("<CHAR_LITERAL>"), FALSE("false"), INT_LITERAL("<INT_LITERAL>"), 
+    NULL("null"), DOUBLE_LITERAL("<DOUBLE_LITERAL>"), STRING_LITERAL("<STRING_LITERAL>"), 
+    TRUE("true"), FLOAT_LITERAL("<FLOAT_LITERAL>"), LONG_LITERAL("<LONG_LITERAL>");
 
     // The token kind's string representation.
     private String image;
