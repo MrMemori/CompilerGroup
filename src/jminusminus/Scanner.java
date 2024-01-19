@@ -110,7 +110,7 @@ class Scanner {
     public TokenInfo getNextToken() {
         StringBuffer buffer;
         boolean moreWhiteSpace = true;
-        boolean isMultiline = false;
+        int multilineCount = 0;
         while (moreWhiteSpace) {
             while (isWhitespace(ch)) {
                 nextCh();
@@ -125,13 +125,20 @@ class Scanner {
                 // Checks for Multiline comments to ignore (Cody Dukes)
                 } else if (ch == '*') {
                 	// Multi-line comment started.
-                	isMultiline = true;
+                	multilineCount++;
                 	nextCh();
-                	while (isMultiline) {
+                	while (multilineCount > 0) {
+                        if (ch == '/') {
+                            nextCh();
+                            if (ch == '*') {
+                                nextCh();
+                                multilineCount++;
+                            }
+                        }
                 		if (ch == '*') {
                 			nextCh();
                 			if (ch == '/') {
-                				isMultiline = false;
+                				multilineCount--;
                 			}
                 		}
                 		nextCh();
