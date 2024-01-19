@@ -61,7 +61,7 @@ class Scanner {
         reserved.put(CLASS.image(), CLASS);
         reserved.put(CONST.image(), CONST);
         reserved.put(CONTINUE.image(), CONTINUE);
-        reserved.put(DEFAULT, DEFAULT.image());
+        reserved.put(DEFAULT.image(), DEFAULT);
         reserved.put(DO.image(), DO);
         reserved.put(DOUBLE.image(), DOUBLE);
         reserved.put(ELSE.image(), ELSE);
@@ -204,6 +204,10 @@ class Scanner {
                     buffer.append(ch);
                     nextCh();
                     return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
+                } else if (ch == 'l' || ch == 'L') { //Jarvis K
+                    buffer.append(ch);
+                    nextCh();
+                    return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
                 } else {
                     if(ch == 'd' || ch == 'D') {
                         buffer.append(ch);
@@ -236,14 +240,14 @@ class Scanner {
             case '*':
                 nextCh();
                 if (ch == '=') {
-                    nextCH();
+                    nextCh();
                     return new TokenInfo(STAR_ASSIGN, line);
                 }
                 return new TokenInfo(STAR, line);
             case '/':
                 nextCh();
                 if (ch == '=') {
-                    nextCH();
+                    nextCh();
                     return new TokenInfo(DIV_ASSIGN, line);
                 }
                 return new TokenInfo(DIV, line);
@@ -509,9 +513,9 @@ class Scanner {
                 if(buffer.charAt(buffer.length()-1) == '_') {
                     reportScannerError("Cannot have an '_' at end of literal or before suffix");
                 }
-                String[] suffixes = {'l','f','d'};
+                String[] suffixes = {"l","f","d"};
                 for (String suffix : suffixes) {
-                    if (suffix.equalsIgnoreCase(ch)) {
+                    if (suffix.equalsIgnoreCase(Character.toString(ch))) {
                         switch(suffix) {
                             case "l":
                                 if(!floatingPoint) {
