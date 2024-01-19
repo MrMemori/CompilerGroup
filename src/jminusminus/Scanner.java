@@ -143,6 +143,7 @@ class Scanner {
                 		}
                         if (ch == EOFCH) {
                             reportScannerError("Reached end of file before closing a multiline comment.");
+                            break;
                         }
                 		nextCh();
                 	}
