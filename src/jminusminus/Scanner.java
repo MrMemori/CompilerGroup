@@ -471,8 +471,8 @@ class Scanner {
                 buffer = new StringBuffer();
                 buffer.append(ch);
                 nextCh();
-                while (isDigit(ch) || ch == '_' || ch == '.' || ch == 'e' || ch == 'E') {
-                    if(ch == 'e' || ch == 'E') {
+                while (isDigit(ch) || ch == '_' || ch == '.' || ch == 'e' || ch == 'E' || ch == 'p' || ch == 'P') {
+                    if(ch == 'e' || ch == 'E' || ch == 'p' || ch == 'P') {
                         char previousChar = buffer.charAt(buffer.length() - 1);
                         if(previousChar == '_') {
                             reportScannerError("Underscores must be within digits.");
@@ -557,6 +557,34 @@ class Scanner {
              * For extra credit: Need binary (0b) octal (0) and hex (0x) these along with suffixes are not case sensitive
              * Scientific notation literals will be doubles unless it has the float suffix
              */
+
+                // Cody Dukes & Jarvis Kampe
+                buffer = new StringBuffer();
+                buffer.append(ch);
+                nextCh();
+                // Hexadecimal
+                if (ch == 'x' || ch == 'X') {
+                    nextCh();
+                    while (isDigit(ch) || (ch >= 65 && ch <= 70) || (ch >= 97 && ch <= 102)) {
+                        nextCh();
+                    }
+                    return new TokenInfo(HEX_LITERAL, buffer.toString(), line);
+                    // Binary
+                } else if (ch == 'b' || ch == 'B') {
+                    nextCh();
+                    while (ch == '0' || ch == '1') {
+                        nextCh();
+                    }
+                    return new TokenInfo(BINARY_LITERAL, buffer.toString(), line);
+                    // Octal
+                } else if (ch >= 48 && ch <= 55) {
+                    nextCh();
+                    while (ch >= 48 && ch <= 55) {
+                        nextCh();
+                    }
+                    return new TokenInfo(OCTAL_LITERAL, buffer.toString(), line);
+                }
+
             default:
                 if (isIdentifierStart(ch)) {
                     buffer = new StringBuffer();
