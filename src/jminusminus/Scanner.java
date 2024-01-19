@@ -141,6 +141,9 @@ class Scanner {
                 				multilineCount--;
                 			}
                 		}
+                        if (ch == EOFCH) {
+                            reportScannerError("Reached end of file before closing a multiline comment.");
+                        }
                 		nextCh();
                 	}
                 } else {
