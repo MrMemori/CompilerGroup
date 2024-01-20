@@ -471,8 +471,8 @@ class Scanner {
                 buffer = new StringBuffer();
                 buffer.append(ch);
                 nextCh();
-                while (isDigit(ch) || ch == '_' || ch == '.' || ch == 'e' || ch == 'E' || ch == 'p' || ch == 'P') {
-                    if(ch == 'e' || ch == 'E' || ch == 'p' || ch == 'P') {
+                while (isDigit(ch) || ch == '_' || ch == '.' || ch == 'e' || ch == 'E') {
+                    if(ch == 'e' || ch == 'E') {
                         char previousChar = buffer.charAt(buffer.length() - 1);
                         if(previousChar == '_') {
                             reportScannerError("Underscores must be within digits.");
@@ -510,8 +510,8 @@ class Scanner {
                     }
                     else if(ch == '_') {
                         char previousChar = buffer.charAt(buffer.length() - 1);
-                        if(previousChar == '.' || previousChar == 'e' || previousChar == 'E') {
-                            reportScannerError("Cannot have an '_' next to an '.' or 'e'/'E'");
+                        if(!isDigit(ch)) {
+                            reportScannerError("Cannot have an '_' unless next to digits.");
                             return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
                         }
                         buffer.append(ch);
@@ -537,8 +537,12 @@ class Scanner {
                                     return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
                                 }
                             case "f":
+                                buffer.append(ch);
+                                nextCh();
                                 return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
                             case "d":
+                                buffer.append(ch);
+                                nextCh();
                                 return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
                         }
                     }
@@ -564,27 +568,177 @@ class Scanner {
                 nextCh();
                 // Hexadecimal
                 if (ch == 'x' || ch == 'X') {
+                    boolean scientificNotation = false;
+                    buffer.append(ch);
                     nextCh();
-                    while (isDigit(ch) || (ch >= 65 && ch <= 70) || (ch >= 97 && ch <= 102)) {
-                        nextCh();
+                    boolean scientificNotation = false;
+                    boolean floatingPoint = false;
+                    while (c || ch == 'p' || ch == 'P' || ch == '_' || ch == '.') {
+                        if(ch == '_') {
+                            char previousChar = buffer.charAt(buffer.length() - 1);
+                            if(!(isDigit(ch) || (ch >= 65 && ch <= 70) || (ch >= 97 && ch <= 102))) { // If not a hex digit...
+                                reportScannerError("Cannot have an '_' unless next to digits.");
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            }
+                            buffer.append(ch);
+                            nextCh();
+                        } else if(ch == 'p' || ch == 'P') {
+                            char previousChar = buffer.charAt(buffer.length() - 1);
+                            if(previousChar == '_') {
+                                reportScannerError("Cannot have an '_' unless next to digits.");
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            }
+                            scientificNotation = true;
+                            buffer.append(ch);
+                            nextCh();
+                            if(ch == '+' || ch == '-') {
+                                buffer.append(ch);
+                                nextCh();
+                            }
+                        } else if(ch == '.') {
+                            char previousChar = buffer.charAt(buffer.length() - 1);
+                            if(ch == '_') {
+                                reportScannerError("Cannot have an underscore besides anything but digits.");
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            }
+                            if (floatingPoint || scientificNotation) {
+                                reportScannerError("Cannot have a second '.' in literal or in exponent of scientific notation.");
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            } else {
+                                buffer.append(ch);
+                                nextCh();
+                                floatingPoint = true;
+                            }
+                        } else {
+                            if(scientificNotation) {
+                                if(isDigit(ch)) {
+                                    buffer.append(ch);
+                                    nextCh();
+                                } else {
+                                    if(ch == 'f' || ch == 'F') {
+                                        buffer.append(ch);
+                                        nextCh();
+                                        return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
+                                    } else if(ch == 'd' || ch == 'D') {
+                                        buffer.append(ch);
+                                        nextCh();
+                                    } else {
+                                        return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                                    }
+                                }
+                            } else {
+                                buffer.append(ch);
+                                nextCh();
+                            }
+                        }
                     }
-                    return new TokenInfo(HEX_LITERAL, buffer.toString(), line);
+                    String[] suffixes = {"l","f","d"};
+                    for (String suffix : suffixes) {
+                        if (suffix.equalsIgnoreCase(Character.toString(ch))) {
+                            switch(suffix) {
+                                case "l":
+                                    buffer.append(ch);
+                                    nextCh();
+                                    return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
+                                case "f":
+                                    buffer.append(ch);
+                                    nextCh();
+                                    return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
+                                case "d":
+                                    buffer.append(ch);
+                                    nextCh();
+                                    return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            }
+                        }
+                    }
+                    return new TokenInfo(INT_LITERAL, buffer.toString(), line);
                     // Binary
                 } else if (ch == 'b' || ch == 'B') {
+                    buffer.append(ch);
                     nextCh();
-                    while (ch == '0' || ch == '1') {
-                        nextCh();
+                    while (ch == '0' || ch == '1' || ch == '_') {
+                        if(ch == '_') {
+                            char previousChar = buffer.charAt(buffer.length() - 1);
+                            if(previousChar == 'b') {
+                                reportScannerError("Underscore must be between digits.");
+                                return new TokenInfo(INT_LITERAL, buffer.toString(), line);
+                            } else {
+                                buffer.append(ch);
+                                nextCh();
+                            }
+                        } else {
+                            buffer.append(ch);
+                            nextCh();
+                        }
                     }
-                    return new TokenInfo(BINARY_LITERAL, buffer.toString(), line);
-                    // Octal
-                } else if (ch >= 48 && ch <= 55) {
+                    if(ch == 'l' || ch == 'L') {
+                        buffer.append(ch);
+                        nextCh();
+                        return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
+                    }
+                    return new TokenInfo(INT_LITERAL, buffer.toString(), line);
+                    // Octal and normal numbers with leading zeros
+                } else if ((ch >= 48 && ch <= 55) || ch == '_') {
+                    buffer.append(ch);
                     nextCh();
                     while (ch >= 48 && ch <= 55) {
+                        buffer.append(ch);
                         nextCh();
                     }
-                    return new TokenInfo(OCTAL_LITERAL, buffer.toString(), line);
+                    boolean scientificNotation = false;
+                    boolean floatingPoint = false;
+                    // numbers starting with 0 that aren't in octal
+                    while(isDigit(ch) || ch == 'e' || ch == 'E' || ch == '.' ) {
+                        if(ch == '.') {
+                            if(scientificNotation || floatingPoint) {
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            } else {
+                                buffer.append(ch);
+                                nextCh();
+                                floatingPoint = true;
+                            }
+                        }
+                        if(ch == 'e' || ch == 'E') {
+                            if(scientificNotation) {
+                                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            }
+                            scientificNotation = true;
+                            buffer.append(ch);
+                            nextCh();
+                        } else {
+                            buffer.append(ch);
+                            nextCh();
+                        }
+                    }
+                    String[] suffixes = {"l","f","d"};
+                    for (String suffix : suffixes) {
+                        if (suffix.equalsIgnoreCase(Character.toString(ch))) {
+                            switch(suffix) {
+                                case "l":
+                                    if(!(floatingPoint || scientificNotation)) {
+                                        buffer.append(ch);
+                                        nextCh();
+                                        return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
+                                    } else {
+                                        return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                                    }
+                                case "f":
+                                    buffer.append(ch);
+                                    nextCh();
+                                    return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
+                                case "d":
+                                    buffer.append(ch);
+                                    nextCh();
+                                    return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                            }
+                        }
+                    }
+                    if(scientificNotation || floatingPoint) {
+                        return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                    } else {
+                        return new TokenInfo(INT_LITERAL, buffer.toString(), line);
+                    }
                 }
-
             default:
                 if (isIdentifierStart(ch)) {
                     buffer = new StringBuffer();
