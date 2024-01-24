@@ -5,30 +5,30 @@ package jminusminus;
 import static jminusminus.CLConstants.*;
 
 /**
- * The AST node for a double literal.
+ * The AST node for a long literal.
  */
-class JLiteralDouble extends JExpression {
+class JLiteralFloat extends JExpression {
     // String representation of the literal.
     private String text;
 
     /**
-     * Constructs an AST node for a double literal given its line number and string representation.
+     * Constructs an AST node for a long literal given its line number and string representation.
      *
      * @param line line in which the literal occurs in the source file.
      * @param text string representation of the literal.
      */
-    public JLiteralDouble(int line, String text) {
+    public JLiteralFloat(int line, String text) {
         super(line);
         this.text = text;
     }
 
     /**
-     * Returns the literal as a double.
+     * Returns the literal as a long.
      *
-     * @return the literal as a double.
+     * @return the literal as a long.
      */
-    public double toDouble() {
-        return Double.parseDouble(text);
+    public long toFloat() {
+        return Long.parseLong(text.substring(0, text.length() - 1));
     }
 
     /**
@@ -36,7 +36,7 @@ class JLiteralDouble extends JExpression {
      */
     public JExpression analyze(Context context) {
         // TODO
-        type = Type.DOUBLE;
+        type = Type.FLOAT;
         return this;
     }
 
@@ -52,7 +52,7 @@ class JLiteralDouble extends JExpression {
      */
     public void toJSON(JSONElement json) {
         JSONElement e = new JSONElement();
-        json.addChild("JLiteralDouble:" + line, e);
+        json.addChild("JLiteralLong:" + line, e);
         e.addAttribute("type", type == null ? "" : type.toString());
         e.addAttribute("value", text);
     }

@@ -36,6 +36,7 @@ class JLiteralLong extends JExpression {
      */
     public JExpression analyze(Context context) {
         // TODO
+        type = Type.LONG;
         return this;
     }
 
