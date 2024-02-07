@@ -45,6 +45,17 @@ class JLiteralDouble extends JExpression {
      */
     public void codegen(CLEmitter output) {
         // TODO
+        double d = toDouble();
+        switch ((int) d) {
+            case 0:
+                output.addNoArgInstruction(DCONST_0);
+                break;
+            case 1:
+                output.addNoArgInstruction(DCONST_1);
+                break;
+            default:
+                output.addLDCInstruction(d);
+        }
     }
 
     /**

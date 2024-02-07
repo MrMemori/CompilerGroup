@@ -45,6 +45,11 @@ class JForStatement extends JStatement {
      */
     public JForStatement analyze(Context context) {
         // TODO
+        init.replaceAll(jStatement -> (JStatement) jStatement.analyze(context));
+        condition = condition.analyze(context);
+        condition.type().mustMatchExpected(line(), Type.BOOLEAN);
+        update.replaceAll(jStatement -> (JStatement) jStatement.analyze(context));
+        body = (JStatement) body.analyze(context);
         return this;
     }
 

@@ -45,6 +45,20 @@ class JLiteralFloat extends JExpression {
      */
     public void codegen(CLEmitter output) {
         // TODO
+        float f = toFloat();
+        switch ((int) f) {
+            case 0:
+                output.addNoArgInstruction(FCONST_0);
+                break;
+            case 1:
+                output.addNoArgInstruction(FCONST_1);
+                break;
+            case 2:
+                output.addNoArgInstruction(FCONST_2);
+                break;
+            default:
+                output.addLDCInstruction(f);
+        }
     }
 
     /**

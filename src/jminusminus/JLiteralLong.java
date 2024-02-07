@@ -45,6 +45,17 @@ class JLiteralLong extends JExpression {
      */
     public void codegen(CLEmitter output) {
         // TODO
+        long l = toLong();
+        switch ((int) l) {
+            case 0:
+                output.addNoArgInstruction(LCONST_0);
+                break;
+            case 1:
+                output.addNoArgInstruction(LCONST_1);
+                break;
+            default:
+                output.addLDCInstruction(l);
+        }
     }
 
     /**
