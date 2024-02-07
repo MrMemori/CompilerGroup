@@ -19,7 +19,7 @@ enum TokenKind {
     INSTANCEOF("instanceof"), INT("int"), INTERFACE("interface"), LONG("long"), NATIVE("native"), 
     NEW("new"), PACKAGE("package"), PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"), 
     RETURN("return"), SHORT("short"), STATIC("static"), STRICTFP("strictfp"), SUPER("super"), 
-    THIS("this"), UNDERSCORE("_"), VOID("void"), WHILE("while"),
+    THIS("this"), UNDERSCORE("_"), UNTIL("until"), VOID("void"), WHILE("while"),
 
     // Operators.
     ASSIGN("="), GT(">"), LT("<"), LNOT("!"), COMPLEMENT("~"), QUESTION("?"), COLON(":"), LAMBDA("->"), 
