@@ -9,7 +9,9 @@ public class Test {
 		char character = 'h';
 		boolean bool = true;
 		int integer = 1;
+		int integer_result = 1 + integer;
 		double double_literal = 1.0;
+		double double_result = double_literal + double_literal;
 		double double_notation = 1.0e20;
 		float float_literal = 1.0f;
 		long long_literal = 1l;
