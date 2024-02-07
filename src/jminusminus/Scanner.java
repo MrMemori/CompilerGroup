@@ -95,6 +95,7 @@ class Scanner {
         reserved.put(THIS.image(), THIS);
         // reserved.put(TRUE.image(), TRUE); Handling true separately since it's not case sensitive.
         reserved.put(UNDERSCORE.image(), UNDERSCORE);
+        reserved.put(UNTIL.image(), UNTIL);
         reserved.put(VOID.image(), VOID);
         reserved.put(WHILE.image(), WHILE);
 
