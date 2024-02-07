@@ -27,6 +27,7 @@ class JThrowStatement extends JStatement {
      */
     public JStatement analyze(Context context) {
         // TODO
+        expr = expr.analyze(context);
         return this;
     }
 

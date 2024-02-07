@@ -19,7 +19,7 @@ public class Test {
 		int hex = 0xf021;
 		int octal = 010037;
 		String test = "/*";
-		
+
 		/*
 		 ioouiae
 		/*
