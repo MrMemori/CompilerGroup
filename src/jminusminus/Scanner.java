@@ -110,6 +110,8 @@ class Scanner {
     public TokenInfo getNextToken() {
         StringBuffer buffer;
         boolean moreWhiteSpace = true;
+        boolean scientificNotation = false;
+        boolean floatingPoint = false;
         int multilineCount = 0;
         while (moreWhiteSpace) {
             while (isWhitespace(ch)) {
@@ -180,7 +182,7 @@ class Scanner {
                     buffer.append('.');
                     buffer.append(ch);
                     nextCh();
-                    boolean scientificNotation = false;
+                    scientificNotation = false;
                     while (isDigit(ch) || ch == 'e' || ch == 'E' || ch == '_') {
                         if(ch == 'e' || ch == 'E') {
                             char previousChar = buffer.charAt(buffer.length() - 1);
@@ -466,8 +468,8 @@ class Scanner {
             case '7':
             case '8':
             case '9':// Added scanning for number literals not starting with 0 (Tanner Denson)
-                boolean floatingPoint = false;
-                boolean scientificNotation = false;
+                floatingPoint = false;
+                scientificNotation = false;
                 buffer = new StringBuffer();
                 buffer.append(ch);
                 nextCh();
@@ -553,7 +555,7 @@ class Scanner {
                 } else {
                     return new TokenInfo(INT_LITERAL, buffer.toString(), line);
                 }
-            case '0'://TODO: Numbers starting with 0 and extra credit bases
+            case '0':
             /* Notes: Hexadecimal scientific notation uses p/P instead of e/E
              * literals cannot start or end with _ and _ cannot be next to anything but digits
              * There is an optional sign +/- before the exponent in scientific notation
@@ -568,12 +570,11 @@ class Scanner {
                 nextCh();
                 // Hexadecimal
                 if (ch == 'x' || ch == 'X') {
-                    boolean scientificNotation = false;
+                    scientificNotation = false;
                     buffer.append(ch);
                     nextCh();
-                    boolean scientificNotation = false;
-                    boolean floatingPoint = false;
-                    while (c || ch == 'p' || ch == 'P' || ch == '_' || ch == '.') {
+                    floatingPoint = false;
+                    while (isDigit(ch) || (ch >= 65 && ch <= 70) || (ch >= 97 && ch <= 102) || ch == 'p' || ch == 'P' || ch == '_' || ch == '.') {
                         if(ch == '_') {
                             char previousChar = buffer.charAt(buffer.length() - 1);
                             if(!(isDigit(ch) || (ch >= 65 && ch <= 70) || (ch >= 97 && ch <= 102))) { // If not a hex digit...
@@ -685,8 +686,8 @@ class Scanner {
                         buffer.append(ch);
                         nextCh();
                     }
-                    boolean scientificNotation = false;
-                    boolean floatingPoint = false;
+                    scientificNotation = false;
+                    floatingPoint = false;
                     // numbers starting with 0 that aren't in octal
                     while(isDigit(ch) || ch == 'e' || ch == 'E' || ch == '.' ) {
                         if(ch == '.') {
