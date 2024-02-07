@@ -58,6 +58,15 @@ class JForStatement extends JStatement {
      */
     public void codegen(CLEmitter output) {
         // TODO
+        String test = output.createLabel();
+        String out = output.createLabel();
+        output.addLabel(test);
+        condition.codegen(output, out, false);
+        for (JStatement jStatement : init) jStatement.codegen(output);
+        for (JStatement jStatement : update) jStatement.codegen(output);
+        body.codegen(output);
+        output.addBranchInstruction(GOTO, test);
+        output.addLabel(out);
     }
 
     /**
