@@ -354,6 +354,22 @@ public class Parser {
             JExpression test = parExpression();
             JStatement statement = statement();
             return new JWhileStatement(line, test, statement);
+            // Additional Statements to Handle (Cody Dukes)
+        } else if (have(DO)) {
+            JExpression test = parExpression();
+            JStatement statement = statement();
+            return new JDoStatement(line, statement, test);
+            /* } else if (have(UNTIL)) {
+             *  JExpression test = parExpression();
+             *  JStatement statement = statement();
+             *  return new JUntilStatement(line, statement, test);
+             */
+//        } else if (have(FOR)) {
+//            JExpression test = parExpression();
+//            JStatement statement = statement();
+//            ArrayList<JStatement> init = ??? ;
+//            ArrayList<JStatement> update = ??? ;
+//            return new JForStatement(line, init, test, update, statement);
         } else {
             // Must be a statementExpression.
             JStatement statement = statementExpression();
