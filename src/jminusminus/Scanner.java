@@ -112,6 +112,7 @@ class Scanner {
         boolean moreWhiteSpace = true;
         boolean scientificNotation = false;
         boolean floatingPoint = false;
+        String[] suffixes = {"l","f","d"};
         int multilineCount = 0;
         while (moreWhiteSpace) {
             while (isWhitespace(ch)) {
@@ -526,7 +527,6 @@ class Scanner {
                 if(buffer.charAt(buffer.length()-1) == '_') {
                     reportScannerError("Cannot have an '_' at end of literal or before suffix");
                 }
-                String[] suffixes = {"l","f","d"};
                 for (String suffix : suffixes) {
                     if (suffix.equalsIgnoreCase(Character.toString(ch))) {
                         switch(suffix) {
@@ -633,7 +633,6 @@ class Scanner {
                             }
                         }
                     }
-                    String[] suffixes = {"l","f","d"};
                     for (String suffix : suffixes) {
                         if (suffix.equalsIgnoreCase(Character.toString(ch))) {
                             switch(suffix) {
@@ -711,7 +710,6 @@ class Scanner {
                             nextCh();
                         }
                     }
-                    String[] suffixes = {"l","f","d"};
                     for (String suffix : suffixes) {
                         if (suffix.equalsIgnoreCase(Character.toString(ch))) {
                             switch(suffix) {
