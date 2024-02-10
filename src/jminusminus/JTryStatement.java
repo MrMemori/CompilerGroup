@@ -45,6 +45,10 @@ class JTryStatement extends JStatement {
      */
     public JTryStatement analyze(Context context) {
         // TODO
+        tryBlock = tryBlock.analyze(context);
+        parameters.replaceAll(jFormalParameter -> (JFormalParameter) jFormalParameter.analyze(context));
+        catchBlocks.replaceAll(jBlock -> (JBlock) jBlock.analyze(context));
+        finallyBlock = finallyBlock.analyze(context);
         return this;
     }
 
@@ -53,6 +57,8 @@ class JTryStatement extends JStatement {
      */
     public void codegen(CLEmitter output) {
         // TODO
+        String catchLabel = output.createLabel();
+        String finallyLabel = output.createLabel();
     }
 
     /**

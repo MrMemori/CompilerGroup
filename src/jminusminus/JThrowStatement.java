@@ -36,6 +36,7 @@ class JThrowStatement extends JStatement {
      */
     public void codegen(CLEmitter output) {
         // TODO
+        expr.codegen(output);
     }
 
     /**

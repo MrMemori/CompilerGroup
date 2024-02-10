@@ -20,6 +20,7 @@ enum TokenKind {
     NEW("new"), PACKAGE("package"), PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"), 
     RETURN("return"), SHORT("short"), STATIC("static"), STRICTFP("strictfp"), SUPER("super"), 
     THIS("this"), UNDERSCORE("_"), UNTIL("until"), VOID("void"), WHILE("while"),
+    SWITCH("switch"),
 
     // Operators.
     ASSIGN("="), GT(">"), LT("<"), LNOT("!"), COMPLEMENT("~"), QUESTION("?"), COLON(":"), LAMBDA("->"), 
