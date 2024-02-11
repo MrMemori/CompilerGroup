@@ -356,8 +356,10 @@ public class Parser {
             return new JWhileStatement(line, test, statement);
             // Additional Statements to Handle (Cody Dukes)
         } else if (have(DO)) {
-            JExpression test = parExpression();
             JStatement statement = statement();
+            JExpression test = null;
+            if (have(WHILE))
+                test = parExpression();
             return new JDoStatement(line, statement, test);
             /* } else if (have(UNTIL)) {
              *  JExpression test = parExpression();
@@ -366,14 +368,35 @@ public class Parser {
              */
         } else if (have(FOR)) {
             ArrayList<JStatement> init = new ArrayList<JStatement>();
-            JExpression test = parExpression();
+            init.add(statement());
+            JExpression test = null;
             ArrayList<JStatement> update = new ArrayList<JStatement>();
-            JStatement statement = statement();
+            //update.add(statement());
+            JStatement statement = null;
             return new JForStatement(line, init, test, update, statement);
         } else if (have(SWITCH)) {
             JExpression test = parExpression();
+            ArrayList<JExpression> switchLabels = new ArrayList<JExpression>();
+            switchLabels.add(expression());
+            ArrayList<JStatement> block = new ArrayList<JStatement>();
             ArrayList<SwitchStatementGroup> stmtGroup = new ArrayList<SwitchStatementGroup>();
+            stmtGroup.add(new SwitchStatementGroup(switchLabels, block));
             return new JSwitchStatement(line, test, stmtGroup);
+        } else if (have(TRY)) {
+            JBlock tryBlock = block();
+            ArrayList<JFormalParameter> parameters = new ArrayList<JFormalParameter>();
+            ArrayList<JBlock> catchBlocks = new ArrayList<JBlock>();
+            JBlock finallyBlock = null;
+            if (have(CATCH)) {
+                parameters.add(formalParameter());
+                catchBlocks.add(block());
+            }
+            if (have(FINALLY))
+                finallyBlock = block();
+            return new JTryStatement(line, tryBlock, parameters, catchBlocks, finallyBlock);
+        } else if (have(THROW)) {
+            JExpression expr = creator();
+            return new JThrowStatement(line, expr);
         } else {
             // Must be a statementExpression.
             JStatement statement = statementExpression();
