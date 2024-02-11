@@ -340,6 +340,11 @@ public class Parser {
             JStatement consequent = statement();
             JStatement alternate = have(ELSE) ? statement() : null;
             return new JIfStatement(line, test, consequent, alternate);
+        } else if (have(QUESTION)) {
+            JExpression test = parExpression();
+            JStatement consequent = statement();
+            JStatement alternate = have(COLON) ? statement() : null;
+            return new JConditionalExpression(line, test, consequent, alternate);
         } else if (have(RETURN)) {
             if (have(SEMI)) {
                 return new JReturnStatement(line, null);

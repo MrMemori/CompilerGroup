@@ -15,6 +15,12 @@ public class Test {
 
 		} while (true)
 
+		// Ternary Tests
+		int result = true ? 5 : 3;
+		System.out.println(result);
+		result = false ? 5 : 3;
+		System.out.println(result);
+
 		/*int i = 1;
 		switch (i) {
 			case 1:

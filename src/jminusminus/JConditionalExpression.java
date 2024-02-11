@@ -11,11 +11,11 @@ class JConditionalExpression extends JExpression {
     // Test expression.
     private JExpression condition;
 
-    // Then part.
-    private JExpression thenPart;
+    // Then part. (Originally a JExpression)
+    private JStatement thenPart;
 
-    // Else part.
-    private JExpression elsePart;
+    // Else part. (Originally a JExpression)
+    private JStatement elsePart;
 
     /**
      * Constructs an AST node for a conditional expression.
@@ -25,8 +25,8 @@ class JConditionalExpression extends JExpression {
      * @param thenPart  then part.
      * @param elsePart  else part.
      */
-    public JConditionalExpression(int line, JExpression condition, JExpression thenPart,
-                                  JExpression elsePart) {
+    public JConditionalExpression(int line, JExpression condition, JStatement thenPart,
+                                  JStatement elsePart) {
         super(line);
         this.condition = condition;
         this.thenPart = thenPart;
@@ -35,9 +35,15 @@ class JConditionalExpression extends JExpression {
 
     /**
      * {@inheritDoc}
+     * (Cody Dukes)
      */
     public JExpression analyze(Context context) {
-        // TODO
+        condition = (JExpression) condition.analyze(context);
+        condition.type().mustMatchExpected(line(), Type.BOOLEAN);
+        thenPart = (JExpression) thenPart.analyze(context);
+        if (elsePart != null) {
+            elsePart = (JExpression) elsePart.analyze(context);
+        }
         return this;
     }
 
@@ -45,7 +51,18 @@ class JConditionalExpression extends JExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        String elseLabel = output.createLabel();
+        String endLabel = output.createLabel();
+        condition.codegen(output, elseLabel, false);
+        thenPart.codegen(output);
+        if (elsePart != null) {
+            output.addBranchInstruction(GOTO, endLabel);
+        }
+        output.addLabel(elseLabel);
+        if (elsePart != null) {
+            elsePart.codegen(output);
+            output.addLabel(endLabel);
+        }
     }
 
     /**
