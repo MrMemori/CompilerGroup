@@ -11,9 +11,9 @@ public class Test {
 
 		}*/
 
-		/*do {
+		do {
 
-		} while (true)*/
+		} while (true)
 
 		/*int i = 1;
 		switch (i) {

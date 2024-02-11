@@ -358,14 +358,9 @@ public class Parser {
         } else if (have(DO)) {
             JStatement statement = statement();
             JExpression test = null;
-            if (have(WHILE))
+            if (have(WHILE) || have(UNTIL))
                 test = parExpression();
             return new JDoStatement(line, statement, test);
-            /* } else if (have(UNTIL)) {
-             *  JExpression test = parExpression();
-             *  JStatement statement = statement();
-             *  return new JUntilStatement(line, statement, test);
-             */
         } else if (have(FOR)) {
             ArrayList<JStatement> init = new ArrayList<JStatement>();
             init.add(statement());
