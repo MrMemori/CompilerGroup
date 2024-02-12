@@ -48,7 +48,9 @@ class JTryStatement extends JStatement {
         tryBlock = tryBlock.analyze(context);
         parameters.replaceAll(jFormalParameter -> (JFormalParameter) jFormalParameter.analyze(context));
         catchBlocks.replaceAll(jBlock -> (JBlock) jBlock.analyze(context));
-        finallyBlock = finallyBlock.analyze(context);
+        if(finallyBlock != null) {
+            finallyBlock = finallyBlock.analyze(context);
+        }
         return this;
     }
 
@@ -57,8 +59,23 @@ class JTryStatement extends JStatement {
      */
     public void codegen(CLEmitter output) {
         // TODO
-        String catchLabel = output.createLabel();
-        String finallyLabel = output.createLabel();
+        String startTryLabel = output.createLabel();
+        String endTryLabel = output.createLabel();
+        output.addLabel(startTryLabel);
+        tryBlock.codegen(output);
+        output.addLabel(endTryLabel);
+        for (int i = 0; i < parameters.size(); i++) {
+            String label = output.createLabel();
+            output.addLabel(label);
+            catchBlocks.get(i).codegen(output);
+            output.addExceptionHandler(startTryLabel, endTryLabel, label, parameters.get(i).name());
+        }
+        if(finallyBlock != null) {
+            String label = output.createLabel();
+            output.addLabel(label);
+            finallyBlock.codegen(output);
+            output.addExceptionHandler(startTryLabel, endTryLabel, label, null);
+        }
     }
 
     /**
