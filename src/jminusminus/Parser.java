@@ -379,14 +379,20 @@ public class Parser {
             ArrayList<JExpression> switchLabels = new ArrayList<JExpression>();
             ArrayList<JStatement> block = new ArrayList<JStatement>();
             ArrayList<SwitchStatementGroup> stmtGroup = new ArrayList<SwitchStatementGroup>();
-            block.add(statement());
             if (have(LCURLY)) {
                 while (have(CASE)) {
                     switchLabels.add(expression());
-                    stmtGroup.add(new SwitchStatementGroup(switchLabels, block));
+                    if (have(COLON)) {
+
+                    }
                 }
                 if (have(DEFAULT)) {
-                    switchLabels.add(expression());
+                    if (have(COLON)) {
+
+                    }
+                }
+                stmtGroup.add(new SwitchStatementGroup(switchLabels, block));
+                if (have(RCURLY)) {
                 }
             }
             return new JSwitchStatement(line, test, stmtGroup);

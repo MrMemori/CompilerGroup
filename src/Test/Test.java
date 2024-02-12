@@ -24,11 +24,11 @@ public class Test {
 		int i = 1;
 		switch (i) {
 			case 1:
-				break;
+
 			case 2:
-				break;
+
 			default:
-				i++;
+
 		}
 
 //		try {

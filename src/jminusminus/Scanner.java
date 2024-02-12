@@ -92,6 +92,7 @@ class Scanner {
         reserved.put(STATIC.image(), STATIC);
         reserved.put(STRICTFP.image(), STRICTFP);
         reserved.put(SUPER.image(), SUPER);
+        reserved.put(SWITCH.image(), SWITCH);
         reserved.put(THIS.image(), THIS);
         // Scanners Added
         reserved.put(TRY.image(), TRY);
