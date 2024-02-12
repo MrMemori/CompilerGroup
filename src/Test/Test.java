@@ -7,9 +7,9 @@ public class Test {
 		/*int i = 1;
 		i = (i = 1) ? (i = 2) : (i - 1)*/
 
-		/*for (int i = 1; i < 2; i++) {
+		for (int i = 1; i < 2; i++) {
 
-		}*/
+		}
 
 //		do {
 //
@@ -21,7 +21,7 @@ public class Test {
 //		result = false ? 5 : 3;
 //		System.out.println(result);
 
-		int i = 1;
+		/*int i = 1;
 		switch (i) {
 			case 1:
 
@@ -29,7 +29,7 @@ public class Test {
 
 			default:
 
-		}
+		}*/
 
 //		try {
 //

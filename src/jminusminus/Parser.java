@@ -368,11 +368,14 @@ public class Parser {
             return new JDoStatement(line, statement, test);
         } else if (have(FOR)) {
             ArrayList<JStatement> init = new ArrayList<JStatement>();
-            init.add(statement());
-            JExpression test = null;
+            mustBe(LPAREN);
+            init.add(blockStatement());
+            JExpression test = expression();
+            mustBe(SEMI);
             ArrayList<JStatement> update = new ArrayList<JStatement>();
-            //update.add(statement());
-            JStatement statement = null;
+            update.add(statementExpression());
+            mustBe(RPAREN);
+            JStatement statement = statement();
             return new JForStatement(line, init, test, update, statement);
         } else if (have(SWITCH)) {
             JExpression test = parExpression();
