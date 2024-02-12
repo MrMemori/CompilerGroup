@@ -93,6 +93,10 @@ class Scanner {
         reserved.put(STRICTFP.image(), STRICTFP);
         reserved.put(SUPER.image(), SUPER);
         reserved.put(THIS.image(), THIS);
+        // Scanners Added
+        reserved.put(TRY.image(), TRY);
+        reserved.put(CATCH.image(),CATCH);
+        reserved.put(FINALLY.image(),FINALLY);
         // reserved.put(TRUE.image(), TRUE); Handling true separately since it's not case sensitive.
         reserved.put(UNDERSCORE.image(), UNDERSCORE);
         reserved.put(UNTIL.image(), UNTIL);
