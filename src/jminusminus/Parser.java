@@ -387,7 +387,7 @@ public class Parser {
             ArrayList<JFormalParameter> parameters = new ArrayList<JFormalParameter>();
             ArrayList<JBlock> catchBlocks = new ArrayList<JBlock>();
             JBlock finallyBlock = null;
-            if (have(CATCH)) {
+            while (have(CATCH)) {
                 parameters.add(formalParameter());
                 catchBlocks.add(block());
             }
