@@ -16,24 +16,28 @@ public class Test {
 //		} while (true)
 
 		// Ternary Tests
-		int result = (5 > 2) ? 5 : 3;
-		System.out.println(result);
-		result = false ? 5 : 3;
-		System.out.println(result);
+//		int result = (5 > 2) ? 5 : 3;
+//		System.out.println(result);
+//		result = false ? 5 : 3;
+//		System.out.println(result);
 
-		/*int i = 1;
+		int i = 1;
 		switch (i) {
 			case 1:
 				break;
-		}*/
-
-		try {
-
-		} catch (Exception e) {
-
-		} finally {
-
+			case 2:
+				break;
+			default:
+				i++;
 		}
+
+//		try {
+//
+//		} catch (Exception e) {
+//
+//		} finally {
+//
+//		}
 
 		//throw new e;
 
