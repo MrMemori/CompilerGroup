@@ -289,4 +289,8 @@ class JClassDeclaration extends JAST implements JTypeDecl {
 
         output.addNoArgInstruction(RETURN);
     }
+
+    public boolean isPublic() {
+        return mods.contains("public");
+    }
 }

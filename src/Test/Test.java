@@ -7,9 +7,14 @@ public class Test {
 		/*int i = 1;
 		i = (i = 1) ? (i = 2) : (i - 1)*/
 
-		for (int i = 1; i < 2; i++) {
+		/*for (int i = 1; i < 2; i++) {
 
 		}
+
+		int[] a = new int[1];
+		for (int i : a) {
+
+		}*/
 
 //		do {
 //
@@ -42,5 +47,9 @@ public class Test {
 		//throw new e;
 
 	}
+
+}
+
+public class Toast {
 
 }

@@ -153,7 +153,20 @@ class JCompilationUnit extends JAST {
      * {@inheritDoc}
      */
     public JAST analyze(Context context) {
+        boolean publicClassSeen = false;
         for (JAST typeDeclaration : typeDeclarations) {
+            if(typeDeclaration instanceof JClassDeclaration) {
+                JClassDeclaration newClass = (JClassDeclaration) typeDeclaration;
+                if(newClass.isPublic()) {// Make a method in JClassDeclaration to check if public is in mods maybe?
+                    if(publicClassSeen) {
+                        JAST.compilationUnit.reportSemanticError(line,
+                                "The public type %s must be defined in its own file", ((JClassDeclaration) typeDeclaration).name());
+                    } else {
+                        publicClassSeen = true;
+                    }
+                }
+
+            }
             typeDeclaration.analyze(this.context);
         }
         return this;
