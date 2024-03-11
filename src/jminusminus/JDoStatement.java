@@ -42,12 +42,9 @@ public class JDoStatement extends JStatement {
      */
     public void codegen(CLEmitter output) {
         String test = output.createLabel();
-        String out = output.createLabel();
         output.addLabel(test);
         body.codegen(output);
         condition.codegen(output, test, true);
-        output.addBranchInstruction(GOTO, out);
-        output.addLabel(out);
     }
 
     /**
