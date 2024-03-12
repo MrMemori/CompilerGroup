@@ -256,9 +256,9 @@ class JOrOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
-        lhs.type().mustMatchExpected(line(), Type.BOOLEAN);
-        rhs.type().mustMatchExpected(line(), Type.BOOLEAN);
-        type = Type.BOOLEAN;
+        lhs.type().mustMatchExpected(line(), Type.INT);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
         return this;
     }
 
