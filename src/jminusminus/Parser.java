@@ -249,11 +249,11 @@ public class Parser {
             String name = scanner.previousToken().image();
             ArrayList<JFormalParameter> params = formalParameters();
             ArrayList<TypeName> exceptions = new ArrayList<>();
-                if(have(THROWS)) {
-                    do {
-                        exceptions.add(qualifiedIdentifier());
-                    } while (have(COMMA));
-                }
+            if(have(THROWS)) {
+                do {
+                    exceptions.add(qualifiedIdentifier());
+                } while (have(COMMA));
+            }
             JBlock body = block();
             memberDecl = new JConstructorDeclaration(line, mods, name, params, exceptions, body);
         } else {
@@ -272,7 +272,7 @@ public class Parser {
                 }
                 JBlock body = have(SEMI) ? null : block();
                 memberDecl = new JMethodDeclaration(line, mods, name, type, params, exceptions, body);
-            } else { 
+            } else {
                 type = type();
                 if (seeIdentLParen()) {
                     // A non void method.
@@ -425,20 +425,27 @@ public class Parser {
                 finallyBlock = block();
             return new JTryStatement(line, tryBlock, parameters, catchBlocks, finallyBlock);
         } else if (have(THROW)) {
-            JExpression expr = creator();
-            return new JThrowStatement(line, expr);
+            if(have(NEW)) {
+                JExpression expr = creator();
+                return new JThrowStatement(line, expr);
+            } else {
+                JExpression expr = expression();
+                return new JThrowStatement(line, expr);
+            }
+
         } else {
             JExpression condition = expression();
             if(have(QUESTION)) {
-            JExpression consequent = expression();
-            mustBe(COLON);
-            JExpression alternate = expression();
-            return new JConditionalExpression(line, condition, consequent, alternate);
+                JExpression consequent = expression();
+                mustBe(COLON);
+                JExpression alternate = expression();
+                return new JConditionalExpression(line, condition, consequent, alternate);
             }
             else {
                 // Must be a statementExpression
                 mustBe(SEMI);
-                return (JStatement) condition;
+                condition.isStatementExpression = true;
+                return condition;
             }
         }
     }

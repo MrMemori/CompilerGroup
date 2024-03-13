@@ -103,7 +103,8 @@ class Scanner {
         reserved.put(UNTIL.image(), UNTIL);
         reserved.put(VOID.image(), VOID);
         reserved.put(WHILE.image(), WHILE);
-
+        reserved.put(THROW.image(), THROW);
+        reserved.put(THROWS.image(), THROWS);
         // Prime the pump.
         nextCh();
     }
@@ -743,6 +744,9 @@ class Scanner {
                     } else {
                         return new TokenInfo(INT_LITERAL, buffer.toString(), line);
                     }
+                }
+                else {
+                    return new TokenInfo(INT_LITERAL, buffer.toString(), line);
                 }
             default:
                 if (isIdentifierStart(ch)) {
